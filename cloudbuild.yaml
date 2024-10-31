@@ -2,7 +2,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 substitutions:
-  _SPRING_VERSION: ''  # Placeholder for SPRING_VERSION to be set during trigger or build
+  _SPRING_VERSION: ''  # Placeholder for SPRING_VERSION to be set during the trigger
 
 steps:
   # Step 1: Install yq
@@ -19,18 +19,18 @@ steps:
     args:
       - '-c'
       - |
+        # Extract the version and set it to the environment variable
         SPRING_VERSION=$(yq '.spring.version' application.yml)
         echo "Setting SPRING_VERSION to ${SPRING_VERSION}"
-        echo "${SPRING_VERSION}" > spring_version.txt  # Save to a file for later use
+        # Write the version to a file (optional)
+        echo "${SPRING_VERSION}" > spring_version.txt
 
   # Step 3: Build the Docker image with the version tag
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/my-batis-test-$COMMIT_SHA:${_SPRING_VERSION}'
-      - '--build-arg'
-      - 'SPRING_VERSION=${_SPRING_VERSION}'  # Pass the version as a build argument
+      - 'gcr.io/$PROJECT_ID/my-batis-test-$COMMIT_SHA:${_SPRING_VERSION}'  # Use _SPRING_VERSION for the tag
       - '.'
 
 images:
