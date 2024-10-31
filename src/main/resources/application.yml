@@ -1,5 +1,6 @@
 # H2 Database Configuration
 spring:
+  appName: GCP Playground
   version: 1.0.0
   datasource:
     url: jdbc:h2:mem:testdb
