@@ -20,10 +20,8 @@ steps:
       - '-c'
       - |
         SPRING_VERSION=$(yq '.spring.version' application.yml)
-        echo "SPRING_VERSION=${SPRING_VERSION}" > version.env
-        # Use the extracted version to set the substitution value
-        echo "Setting SPRING_VERSION=${SPRING_VERSION} as a build variable."
-        echo "SPRING_VERSION=${SPRING_VERSION}" >> $HOME/.bashrc
+        echo "Setting SPRING_VERSION to ${SPRING_VERSION}"
+        echo "${SPRING_VERSION}" > spring_version.txt  # Save to a file for later use
 
   # Step 3: Build the Docker image with the version tag
   - name: 'gcr.io/cloud-builders/docker'
@@ -31,6 +29,8 @@ steps:
       - 'build'
       - '-t'
       - 'gcr.io/$PROJECT_ID/my-batis-test-$COMMIT_SHA:${_SPRING_VERSION}'
+      - '--build-arg'
+      - 'SPRING_VERSION=${_SPRING_VERSION}'  # Pass the version as a build argument
       - '.'
 
 images:
