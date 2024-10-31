@@ -13,7 +13,7 @@ steps:
       - |
         apk add --no-cache yq
 
-  # Step 2: Extract the version from application.yml and set it as a substitution
+  # Step 2: Extract the version from application.yml
   - name: 'alpine'
     entrypoint: 'sh'
     args:
@@ -21,8 +21,9 @@ steps:
       - |
         SPRING_VERSION=$(yq '.spring.version' application.yml)
         echo "SPRING_VERSION=${SPRING_VERSION}" > version.env
-        # Use gcloud to set the substitution value dynamically
-        gcloud builds submit --substitutions=_SPRING_VERSION=${SPRING_VERSION}
+        # Use the extracted version to set the substitution value
+        echo "Setting SPRING_VERSION=${SPRING_VERSION} as a build variable."
+        echo "SPRING_VERSION=${SPRING_VERSION}" >> $HOME/.bashrc
 
   # Step 3: Build the Docker image with the version tag
   - name: 'gcr.io/cloud-builders/docker'
